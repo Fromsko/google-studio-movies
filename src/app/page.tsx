@@ -53,30 +53,28 @@ export default function Home() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-4 items-center space-x-0">
+        <div className="flex justify-center mt-4 items-center">
           <Button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             variant="outline"
-            className="rounded-l-full"
+            className="rounded-l-full flex items-center justify-center"
           >
-            <ChevronLeft className="h-4 w-4"/>
+            <ChevronLeft className="h-4 w-4 mr-1"/>
             Previous
           </Button>
-          <span className="text-sm text-muted-foreground py-2 border-t border-b border-border px-0">{`Page ${currentPage} of ${totalPages}`}</span>
+          <span className="text-sm text-muted-foreground py-2 border-y border-border px-4">{`Page ${currentPage} of ${totalPages}`}</span>
           <Button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             variant="outline"
-            className="rounded-r-full"
+            className="rounded-r-full flex items-center justify-center"
           >
             Next
-             <ChevronRight className="h-4 w-4"/>
+            <ChevronRight className="h-4 w-4 ml-1"/>
           </Button>
         </div>
       )}
     </div>
   );
 }
-
-
