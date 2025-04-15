@@ -1,22 +1,33 @@
 'use client';
 
-import {getMovie} from '@/services/movie-data';
-import {useEffect, useState, use} from 'react';
-import {useRouter} from 'next/navigation';
-import {Button} from "@/components/ui/button";
-import {AspectRatio} from "@/components/ui/aspect-ratio";
+import { getMovie } from '@/services/movie-data';
+import { useEffect, useState, use } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { generateMovieRecommendations } from '@/ai/flows/generate-movie-recommendations';
 import React from 'react';
 
-interface PageProps {
-  params: {id: string};
+interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  genre: string;
+  cast: string[];
+  releaseDate: string;
 }
 
-const MovieDetails: React.FC<PageProps> = ({params}) => {
-  const [movie, setMovie] = useState(null);
-  const router = useRouter();
-  const { id } = use(params as unknown as PageProps)
+interface PageProps {
+  params: { id: string };
+}
+
+const MovieDetails: React.FC<PageProps> = ({ params }) => {
+  const [movie, setMovie] = useState<Movie | null>(null);
   const [recommendedMovies, setRecommendedMovies] = useState<string[]>([]);
+  const [recommendedMoviesDetails, setRecommendedMoviesDetails] = useState<Movie[]>([]);
+  const router = useRouter();
+  const { id } = use(params as unknown as PageProps);
 
   useEffect(() => {
     const loadMovieDetails = async () => {
@@ -24,13 +35,18 @@ const MovieDetails: React.FC<PageProps> = ({params}) => {
       setMovie(movieDetails as Movie);
 
       if (movieDetails) {
-          try {
-              const recommendations = await generateMovieRecommendations({ movieId: id });
-              setRecommendedMovies(recommendations);
-          } catch (error) {
-              console.error("Failed to generate recommendations:", error);
-              // Handle error appropriately, e.g., display a message to the user
-          }
+        try {
+          const recommendations = await generateMovieRecommendations({ movieId: id });
+          setRecommendedMovies(recommendations);
+
+          const recommendedMoviesDetails = await Promise.all(
+            recommendations.map(movieId => getMovie(movieId))
+          );
+          setRecommendedMoviesDetails(recommendedMoviesDetails as Movie[]);
+        } catch (error) {
+          console.error("Failed to generate recommendations:", error);
+          // Handle error appropriately, e.g., display a message to the user
+        }
       }
     };
 
@@ -75,25 +91,22 @@ const MovieDetails: React.FC<PageProps> = ({params}) => {
         </div>
       </div>
 
-      {recommendedMovies.length > 0 && (
-          <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Recommendations</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {recommendedMovies.map(movieId => {
-                      const recommendedMovie = await getMovie(movieId);
-                      if (recommendedMovie) {
-                          return (
-                              <div key={movieId}>
-                                  {/* Render recommended movie card or link */}
-                                  Recommended Movie {movieId}
-                              </div>
-                          );
-                      }
-                      return null;
-                  })}
+      {recommendedMoviesDetails.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Recommendations</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {recommendedMoviesDetails.map((recommendedMovie) => (
+              <div key={recommendedMovie.id}>
+                <div className="border p-4 rounded-lg shadow-md">
+                  <h3 className="text-lg font-semibold">{recommendedMovie.title}</h3>
+                  <p className="text-muted-foreground">{recommendedMovie.description}</p>
+                </div>
               </div>
+            ))}
           </div>
-      )}    </div>
+        </div>
+      )}
+    </div>
   );
 };
 
