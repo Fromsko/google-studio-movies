@@ -1,20 +1,35 @@
 'use client';
 
 import {getMovie} from '@/services/movie-data';
-import { Button } from "@/components/ui/button";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import {Button} from '@/components/ui/button';
+import {AspectRatio} from '@/components/ui/aspect-ratio';
+import {useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
 
 interface PageProps {
-  params: {id: string};
-   };
+  params: { id: string };
+}
 
-async function MovieDetails({params}: PageProps) {
-  const movieId = params.id;
-  const movie = await getMovie(movieId);
+const MovieDetails = ({params}: PageProps) => {
+  const [movie, setMovie] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const loadMovieDetails = async () => {
+      const movieDetails = await getMovie(params.id);
+      setMovie(movieDetails);
+    };
+
+    loadMovieDetails();
+  }, [params.id]);
 
   if (!movie) {
     return <div>Loading...</div>;
   }
+
+  const handleWatchMovie = () => {
+    router.push(`/movies/${movie.id}/watch`);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -37,10 +52,10 @@ async function MovieDetails({params}: PageProps) {
             <strong>Release Date:</strong> {movie.releaseDate}
           </p>
           <Button
-            onClick={() => window.location.href = `/movies/${movieId}/watch`}
+            onClick={handleWatchMovie}
             className="mt-4 bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark transition duration-300"
           >
-             Watch Movie
+            Watch Movie
           </Button>
         </div>
       </div>
