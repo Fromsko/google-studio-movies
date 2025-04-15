@@ -53,7 +53,7 @@ export async function getMovies(): Promise<Movie[]> {
       cast: ['Cillian Murphy', 'Emily Blunt', 'Robert Downey Jr.'],
       releaseDate: '2023-07-21',
       streamUrl: 'https://example.com/oppenheimer',
-      imageUrl: 'https://example.com/oppenheimer.jpg',
+      imageUrl: 'https://i.pravatar.cc/300?id=1',
       genre: 'Drama',
     },
     {
@@ -63,7 +63,7 @@ export async function getMovies(): Promise<Movie[]> {
       cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Elliot Page'],
       releaseDate: '2010-07-16',
       streamUrl: 'https://example.com/inception',
-      imageUrl: 'https://example.com/inception.jpg',
+      imageUrl: 'https://i.pravatar.cc/300?id=2',
       genre: 'Sci-Fi',
     },
     {

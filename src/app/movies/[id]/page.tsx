@@ -1,7 +1,7 @@
 'use client';
 
 import {getMovie} from '@/services/movie-data';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, use} from 'react';
 import {useRouter} from 'next/navigation';
 import {Button} from "@/components/ui/button";
 import {AspectRatio} from "@/components/ui/aspect-ratio";
@@ -15,16 +15,17 @@ interface PageProps {
 const MovieDetails: React.FC<PageProps> = ({params}) => {
   const [movie, setMovie] = useState(null);
   const router = useRouter();
+  const { id } = use(params as unknown as PageProps)
   const [recommendedMovies, setRecommendedMovies] = useState<string[]>([]);
 
   useEffect(() => {
     const loadMovieDetails = async () => {
-      const movieDetails = await getMovie(params.id);
-      setMovie(movieDetails);
+      const movieDetails = await getMovie(id);
+      setMovie(movieDetails as Movie);
 
       if (movieDetails) {
           try {
-              const recommendations = await generateMovieRecommendations({ movieId: params.id });
+              const recommendations = await generateMovieRecommendations({ movieId: id });
               setRecommendedMovies(recommendations);
           } catch (error) {
               console.error("Failed to generate recommendations:", error);
@@ -34,10 +35,10 @@ const MovieDetails: React.FC<PageProps> = ({params}) => {
     };
 
     loadMovieDetails();
-  }, [params.id]);
+  }, [id]);
 
   const handleWatchMovie = () => {
-    router.push(`/movies/${params.id}/watch`);
+    router.push(`/movies/${id}/watch`);
   };
 
   if (!movie) {
@@ -79,7 +80,7 @@ const MovieDetails: React.FC<PageProps> = ({params}) => {
               <h2 className="text-xl font-semibold mb-4">Recommendations</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {recommendedMovies.map(movieId => {
-                      const recommendedMovie = getMovie(movieId);
+                      const recommendedMovie = await getMovie(movieId);
                       if (recommendedMovie) {
                           return (
                               <div key={movieId}>
