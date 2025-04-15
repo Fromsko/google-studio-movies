@@ -18,6 +18,7 @@ interface MovieDetailsProps {
 const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   const [movie, setMovie] = useState(null);
   const [recommendedMovies, setRecommendedMovies] = useState<string[]>([]);
+  const [showIframe, setShowIframe] = useState(false);
 
   useEffect(() => {
     const loadMovieDetails = async () => {
@@ -49,6 +50,10 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   if (!movie) {
     return <div>Loading...</div>;
   }
+
+  const handleWatchMovie = () => {
+    setShowIframe(true);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -88,26 +93,28 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
 
             {/* Right Column - Streaming and Recommendations */}
             <div className="flex flex-col justify-start">
-              <h2 className="text-xl font-semibold mb-2">Watch Now</h2>
-              <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden shadow-md">
-                <iframe
-                  src={movie.streamUrl}
-                  title="Movie Stream"
-                  className="w-full h-full"
-                  allowFullScreen
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    border: 'none',
-                  }}
-                />
-              </AspectRatio>
               <div className="mt-4">
-                <Button>
+                <Button onClick={handleWatchMovie} disabled={showIframe}>
                   <Play className="mr-2 h-4 w-4"/>
-                  Watch Movie
+                  {showIframe ? 'Watching Movie' : 'Watch Movie'}
                 </Button>
               </div>
+
+              {showIframe && (
+                <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden shadow-md mt-4">
+                  <iframe
+                    src={movie.streamUrl}
+                    title="Movie Stream"
+                    className="w-full h-full"
+                    allowFullScreen
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none',
+                    }}
+                  />
+                </AspectRatio>
+              )}
 
               {/* Recommendations Section */}
               <div className="mt-6">
