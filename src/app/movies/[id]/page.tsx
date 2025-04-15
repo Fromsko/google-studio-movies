@@ -7,6 +7,7 @@ import {Button} from '@/components/ui/button';
 import {useToast} from "@/hooks/use-toast"
 import {MovieCard} from '@/components/movie-card';
 import {AspectRatio} from "@/components/ui/aspect-ratio"
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 
 interface MovieDetailsProps {
   params: {
@@ -54,42 +55,48 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-semibold mb-4">{movie.title}</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <img
-            src={movie.imageUrl || 'https://picsum.photos/500/300'}
-            alt={movie.title}
-            className="w-full rounded-lg shadow-md"
-            width={500}
-            height={300}
-          />
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-2">Description</h2>
-            <p className="text-muted-foreground">{movie.description}</p>
-          </div>
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-2">Cast</h2>
-            <p className="text-muted-foreground">{movie.cast.join(', ')}</p>
-          </div>
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-2">Release Date</h2>
-            <p className="text-muted-foreground">{movie.releaseDate}</p>
-          </div>
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Stream</h2>
-          <Stream streamUrl={movie.streamUrl}/>
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-2">Recommendations</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {recommendations.map((movieId) => {
-                return (<Recommendation key={movieId} movieId={movieId}/>);
-              })}
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-3xl font-semibold">{movie.title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <AspectRatio ratio={500/300} className="w-full rounded-lg overflow-hidden shadow-md">
+                <img
+                  src={movie.imageUrl || 'https://picsum.photos/500/300'}
+                  alt={movie.title}
+                  className="object-cover w-full h-full"
+                />
+              </AspectRatio>
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-2">Description</h2>
+                <p className="text-muted-foreground">{movie.description}</p>
+              </div>
+              <div className="mt-4">
+                <h2 className="text-xl font-semibold mb-2">Cast</h2>
+                <p className="text-muted-foreground">{movie.cast.join(', ')}</p>
+              </div>
+              <div className="mt-4">
+                <h2 className="text-xl font-semibold mb-2">Release Date</h2>
+                <p className="text-muted-foreground">{movie.releaseDate}</p>
+              </div>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Stream</h2>
+              <Stream streamUrl={movie.streamUrl}/>
+              <div className="mt-4">
+                <h2 className="text-xl font-semibold mb-2">Recommendations</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {recommendations.map((movieId) => {
+                    return (<Recommendation key={movieId} movieId={movieId}/>);
+                  })}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -137,5 +144,3 @@ const Stream: React.FC<StreamProps> = ({streamUrl}) => {
     </AspectRatio>
   );
 };
-
-
