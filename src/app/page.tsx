@@ -58,7 +58,7 @@ export default function Home() {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             variant="outline"
-            className="rounded-full"
+            className="rounded-l-full"
           >
             <ChevronLeft className="h-4 w-4"/>
             Previous
@@ -68,7 +68,7 @@ export default function Home() {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             variant="outline"
-            className="rounded-full"
+            className="rounded-r-full"
           >
             Next
              <ChevronRight className="h-4 w-4"/>
