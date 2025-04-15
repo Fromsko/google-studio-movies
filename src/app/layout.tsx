@@ -9,6 +9,7 @@ import {Search} from 'lucide-react';
 import {useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {cn} from "@/lib/utils";
+import {useEffect} from 'react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,17 +29,21 @@ export default function RootLayout({
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
+  // Debounce search logic
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchTerm.trim() !== '') {
+        router.push(`/?search=${searchTerm}`);
+      } else {
+        router.push('/');
+      }
+    }, 300); // Adjust the delay as needed
+
+    return () => clearTimeout(timeoutId); // Clear timeout on unmount or when searchTerm changes
+  }, [searchTerm, router]);
+
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-  };
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (searchTerm.trim() !== '') {
-      router.push(`/?search=${searchTerm}`);
-    } else {
-      router.push('/');
-    }
   };
 
   return (
@@ -49,7 +54,7 @@ export default function RootLayout({
             <Link href="/" className="text-2xl font-bold text-primary">
               Movie Streamer
             </Link>
-            <form onSubmit={handleSubmit} className="relative flex items-center">
+            <div className="relative flex items-center">
               <Input
                 type="text"
                 placeholder="Search for movies..."
@@ -57,10 +62,8 @@ export default function RootLayout({
                 value={searchTerm}
                 onChange={handleSearch}
               />
-              <button type="submit" className="absolute right-3 h-5 w-5 text-muted-foreground">
-                <Search/>
-              </button>
-            </form>
+              <Search className="absolute right-3 h-5 w-5 text-muted-foreground"/>
+            </div>
           </div>
         </nav>
         <main className="container mx-auto p-4">{children}</main>
