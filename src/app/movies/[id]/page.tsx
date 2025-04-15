@@ -1,11 +1,12 @@
 'use client';
 
-import { getMovie } from '@/services/movie-data';
-import { generateMovieRecommendations } from '@/ai/flows/generate-movie-recommendations';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { useToast } from "@/hooks/use-toast"
-import { MovieCard } from '@/components/movie-card';
+import {getMovie} from '@/services/movie-data';
+import {generateMovieRecommendations} from '@/ai/flows/generate-movie-recommendations';
+import {useEffect, useState} from 'react';
+import {Button} from '@/components/ui/button';
+import {useToast} from "@/hooks/use-toast"
+import {MovieCard} from '@/components/movie-card';
+import {AspectRatio} from "@/components/ui/aspect-ratio"
 
 interface MovieDetailsProps {
   params: {
@@ -13,10 +14,10 @@ interface MovieDetailsProps {
   };
 }
 
-const MovieDetails: React.FC<MovieDetailsProps> = ({ params }) => {
+const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   const [movie, setMovie] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
-  const { toast } = useToast()
+  const {toast} = useToast()
 
   useEffect(() => {
     const loadMovieDetails = async () => {
@@ -31,7 +32,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ params }) => {
     const loadRecommendations = async () => {
       if (movie) {
         try {
-          const recommendedMovieIds = await generateMovieRecommendations({ movieId: movie.id });
+          const recommendedMovieIds = await generateMovieRecommendations({movieId: movie.id});
           setRecommendations(recommendedMovieIds);
         } catch (error) {
           toast({
@@ -78,16 +79,12 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ params }) => {
         </div>
         <div>
           <h2 className="text-xl font-semibold mb-2">Stream</h2>
-          <iframe
-            src={movie.streamUrl}
-            title="Movie Stream"
-            className="w-full h-96"
-          />
+          <Stream streamUrl={movie.streamUrl}/>
           <div className="mt-4">
             <h2 className="text-xl font-semibold mb-2">Recommendations</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {recommendations.map((movieId) => {
-                return (<Recommendation key={movieId} movieId={movieId} />);
+                return (<Recommendation key={movieId} movieId={movieId}/>);
               })}
             </div>
           </div>
@@ -101,7 +98,7 @@ interface RecommendationProps {
   movieId: string;
 }
 
-const Recommendation: React.FC<RecommendationProps> = ({ movieId }) => {
+const Recommendation: React.FC<RecommendationProps> = ({movieId}) => {
   const [recommendedMovie, setRecommendedMovie] = useState(null);
 
   useEffect(() => {
@@ -123,3 +120,20 @@ const Recommendation: React.FC<RecommendationProps> = ({ movieId }) => {
 };
 
 export default MovieDetails;
+
+interface StreamProps {
+  streamUrl: string;
+}
+
+const Stream: React.FC<StreamProps> = ({streamUrl}) => {
+  return (
+    <AspectRatio ratio={16 / 9}>
+      <iframe
+        src={streamUrl}
+        title="Movie Stream"
+        className="w-full h-full"
+        allowFullScreen
+      />
+    </AspectRatio>
+  );
+};
