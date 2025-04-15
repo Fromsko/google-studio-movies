@@ -6,6 +6,7 @@ import {useEffect, useState} from 'react';
 import {Toaster} from "@/components/ui/toaster";
 import {useSearchParams} from "next/navigation";
 import {Button} from "@/components/ui/button";
+import {Suspense} from "react";
 import {ChevronLeft, ChevronRight} from 'lucide-react'
 const MOVIES_PER_PAGE = 15;
 
@@ -42,39 +43,33 @@ export default function Home() {
   return (
     <div>
       <Toaster/>
-      <h1 className="text-3xl font-semibold mb-4">Welcome to the Movie Streamer</h1>
+        <h1 className="text-3xl font-semibold mb-4">Welcome to the Movie Streamer</h1>
 
-      {/* Movie Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 transition-all duration-300">
-        {displayedMovies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie}/>
-        ))}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-4 items-center">
-          <Button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            variant="outline"
-            className="rounded-l-full flex items-center justify-center"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1"/>
-            Previous
-          </Button>
-          <span className="text-sm text-muted-foreground py-2 border-y border-border px-4">{`Page ${currentPage} of ${totalPages}`}</span>
-          <Button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            variant="outline"
-            className="rounded-r-full flex items-center justify-center"
-          >
-            Next
-            <ChevronRight className="h-4 w-4 ml-1"/>
-          </Button>
+      <Suspense fallback={<div className="text-center">Loading movies...</div>}>
+        {/* Movie Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 transition-all duration-300">
+          {displayedMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie}/>
+          ))}
         </div>
-      )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-4 items-center">
+            <Button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              variant="outline"
+              className="rounded-l-full flex items-center justify-center"
+            >
+              <ChevronLeft className="h-4 w-4 mr-1"/>
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground py-2 border-y border-border px-4">{`Page ${currentPage} of ${totalPages}`}</span>
+            <Button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} variant="outline" className="rounded-r-full flex items-center justify-center">Next<ChevronRight className="h-4 w-4 ml-1"/></Button>
+          </div>
+        )}
+      </Suspense>
     </div>
   );
 }
