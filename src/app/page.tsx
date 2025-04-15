@@ -29,7 +29,7 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div>
       <Toaster />
       <h1 className="text-3xl font-semibold mb-4">Welcome to the Movie Streamer</h1>
 
