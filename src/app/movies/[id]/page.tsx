@@ -1,10 +1,12 @@
 'use client';
+
 import {getMovie} from '@/services/movie-data';
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {Button} from "@/components/ui/button";
 import {AspectRatio} from "@/components/ui/aspect-ratio";
 import { generateMovieRecommendations } from '@/ai/flows/generate-movie-recommendations';
+import React from 'react';
 
 interface PageProps {
   params: {id: string};
