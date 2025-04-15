@@ -1,13 +1,13 @@
 'use client';
 
 import {getMovie} from '@/services/movie-data';
-import {generateMovieRecommendations} from '@/ai/flows/generate-movie-recommendations';
 import {useEffect, useState} from 'react';
-import {Button} from '@/components/ui/button';
 import {useToast} from "@/hooks/use-toast"
-import {MovieCard} from '@/components/movie-card';
 import {AspectRatio} from "@/components/ui/aspect-ratio"
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Badge} from "@/components/ui/badge";
+import {Play} from "lucide-react";
+import {Button} from "@/components/ui/button";
 
 interface MovieDetailsProps {
   params: {
@@ -17,7 +17,6 @@ interface MovieDetailsProps {
 
 const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   const [movie, setMovie] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
   const {toast} = useToast()
 
   useEffect(() => {
@@ -29,26 +28,6 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
     loadMovieDetails();
   }, [params.id]);
 
-  useEffect(() => {
-    const loadRecommendations = async () => {
-      if (movie) {
-        try {
-          const recommendedMovieIds = await generateMovieRecommendations({movieId: movie.id});
-          setRecommendations(recommendedMovieIds);
-        } catch (error) {
-          toast({
-            title: "Failed to generate recommendations",
-            description: "There was an error generating movie recommendations. Please try again later.",
-            variant: "destructive",
-          })
-          console.error("Error generating recommendations:", error);
-        }
-      }
-    };
-
-    loadRecommendations();
-  }, [movie, toast]);
-
   if (!movie) {
     return <div>Loading...</div>;
   }
@@ -56,42 +35,52 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-3xl font-semibold">{movie.title}</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-2xl font-semibold">{movie.title}</CardTitle>
+          <Badge variant="secondary">{movie.genre}</Badge>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <AspectRatio ratio={500/300} className="w-full rounded-lg overflow-hidden shadow-md">
+              <AspectRatio ratio={500 / 300} className="w-full rounded-lg overflow-hidden shadow-md">
                 <img
                   src={movie.imageUrl || 'https://picsum.photos/500/300'}
                   alt={movie.title}
                   className="object-cover w-full h-full"
                 />
               </AspectRatio>
+
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-2">Description</h2>
-                <p className="text-muted-foreground">{movie.description}</p>
+                <CardDescription className="text-muted-foreground">{movie.description}</CardDescription>
               </div>
+
               <div className="mt-4">
                 <h2 className="text-xl font-semibold mb-2">Cast</h2>
                 <p className="text-muted-foreground">{movie.cast.join(', ')}</p>
               </div>
+
               <div className="mt-4">
                 <h2 className="text-xl font-semibold mb-2">Release Date</h2>
                 <p className="text-muted-foreground">{movie.releaseDate}</p>
               </div>
             </div>
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Stream</h2>
-              <Stream streamUrl={movie.streamUrl}/>
+
+            <div className="flex flex-col justify-start">
+              <h2 className="text-xl font-semibold mb-2">Watch Now</h2>
+              <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden shadow-md">
+                <iframe
+                  src={movie.streamUrl}
+                  title="Movie Stream"
+                  className="w-full h-full"
+                  allowFullScreen
+                />
+              </AspectRatio>
               <div className="mt-4">
-                <h2 className="text-xl font-semibold mb-2">Recommendations</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {recommendations.map((movieId) => {
-                    return (<Recommendation key={movieId} movieId={movieId}/>);
-                  })}
-                </div>
+                <Button>
+                  <Play className="mr-2 h-4 w-4"/>
+                  Watch Movie
+                </Button>
               </div>
             </div>
           </div>
@@ -101,46 +90,4 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   );
 };
 
-interface RecommendationProps {
-  movieId: string;
-}
-
-const Recommendation: React.FC<RecommendationProps> = ({movieId}) => {
-  const [recommendedMovie, setRecommendedMovie] = useState(null);
-
-  useEffect(() => {
-    const loadRecommendedMovie = async () => {
-      const movieDetails = await getMovie(movieId);
-      setRecommendedMovie(movieDetails);
-    };
-
-    loadRecommendedMovie();
-  }, [movieId]);
-
-  if (!recommendedMovie) {
-    return null;
-  }
-
-  return (
-    <MovieCard movie={recommendedMovie}></MovieCard>
-  );
-};
-
 export default MovieDetails;
-
-interface StreamProps {
-  streamUrl: string;
-}
-
-const Stream: React.FC<StreamProps> = ({streamUrl}) => {
-  return (
-    <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden shadow-md">
-      <iframe
-        src={streamUrl}
-        title="Movie Stream"
-        className="w-full h-full"
-        allowFullScreen
-      />
-    </AspectRatio>
-  );
-};
