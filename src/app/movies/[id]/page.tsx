@@ -2,7 +2,6 @@ import {getMovie} from '@/services/movie-data';
  
  interface PageProps {
    params: {id: string};
-@@ -8,29 +7,18 @@
    };
  }
  
