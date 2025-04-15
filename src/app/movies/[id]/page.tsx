@@ -127,7 +127,7 @@ interface StreamProps {
 
 const Stream: React.FC<StreamProps> = ({streamUrl}) => {
   return (
-    <AspectRatio ratio={16 / 9}>
+    <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden shadow-md">
       <iframe
         src={streamUrl}
         title="Movie Stream"
@@ -137,4 +137,5 @@ const Stream: React.FC<StreamProps> = ({streamUrl}) => {
     </AspectRatio>
   );
 };
+
 

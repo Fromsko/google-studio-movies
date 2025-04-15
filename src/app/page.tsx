@@ -4,6 +4,7 @@ import { MovieCard } from '@/components/movie-card';
 import { getMovies, searchMovies } from '@/services/movie-data';
 import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
+import {Toaster} from "@/components/ui/toaster";
 
 export default function Home() {
   const [movies, setMovies] = useState([]);
@@ -29,6 +30,7 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Toaster />
       <h1 className="text-3xl font-semibold mb-4">Welcome to the Movie Streamer</h1>
 
       {/* Search Input */}
