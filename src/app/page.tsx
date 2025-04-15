@@ -7,7 +7,7 @@ import {Toaster} from "@/components/ui/toaster";
 import {useSearchParams} from "next/navigation";
 import {Button} from "@/components/ui/button";
 
-const MOVIES_PER_PAGE = 20;
+const MOVIES_PER_PAGE = 15;
 
 export default function Home() {
   const [movies, setMovies] = useState([]);
@@ -45,7 +45,7 @@ export default function Home() {
       <h1 className="text-3xl font-semibold mb-4">Welcome to the Movie Streamer</h1>
 
       {/* Movie Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 transition-all duration-300">
         {displayedMovies.map((movie) => (
           <MovieCard key={movie.id} movie={movie}/>
         ))}
@@ -61,7 +61,7 @@ export default function Home() {
           >
             Previous
           </Button>
-          <span>{`Page ${currentPage} of ${totalPages}`}</span>
+          <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
           <Button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
@@ -74,3 +74,4 @@ export default function Home() {
     </div>
   );
 }
+
