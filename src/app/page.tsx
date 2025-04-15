@@ -53,7 +53,7 @@ export default function Home() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-4 items-center space-x-2">
+        <div className="flex justify-center mt-4 items-center space-x-0">
           <Button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
@@ -63,7 +63,7 @@ export default function Home() {
             <ChevronLeft className="h-4 w-4"/>
             Previous
           </Button>
-          <span className="text-sm text-muted-foreground py-2 border-t border-b border-border">{`Page ${currentPage} of ${totalPages}`}</span>
+          <span className="text-sm text-muted-foreground py-2 border-t border-b border-border px-0">{`Page ${currentPage} of ${totalPages}`}</span>
           <Button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
@@ -78,3 +78,4 @@ export default function Home() {
     </div>
   );
 }
+
