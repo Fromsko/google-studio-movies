@@ -3,6 +3,7 @@ import {Geist, Geist_Mono} from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
 import {Input} from '@/components/ui/input';
+import {Search} from 'lucide-react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,7 +33,10 @@ export default function RootLayout({
             <Link href="/" className="text-2xl font-bold text-primary">
               Movie Streamer
             </Link>
-            <Input type="text" placeholder="Search for movies..." className="w-64 rounded-md shadow-sm"/>
+            <div className="relative flex items-center">
+              <Input type="text" placeholder="Search for movies..." className="w-64 rounded-md shadow-sm pr-10"/>
+              <Search className="absolute right-3 h-5 w-5 text-muted-foreground"/>
+            </div>
           </div>
         </nav>
         <main className="container mx-auto p-4">{children}</main>
