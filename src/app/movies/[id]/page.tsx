@@ -1,35 +1,37 @@
 'use client';
 
 import {getMovie} from '@/services/movie-data';
-import {Button} from '@/components/ui/button';
-import {AspectRatio} from '@/components/ui/aspect-ratio';
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
+import {Button} from "@/components/ui/button";
+import {AspectRatio} from "@/components/ui/aspect-ratio";
 
 interface PageProps {
-  params: { id: string };
+  params: {id: string};
 }
 
-const MovieDetails = ({params}: PageProps) => {
+async function MovieDetails({params}: PageProps) {
   const [movie, setMovie] = useState(null);
   const router = useRouter();
+  const movieId = params.id;
 
   useEffect(() => {
     const loadMovieDetails = async () => {
-      const movieDetails = await getMovie(params.id);
+      const movieDetails = await getMovie(movieId);
       setMovie(movieDetails);
     };
 
     loadMovieDetails();
-  }, [params.id]);
+  }, [movieId]);
 
   if (!movie) {
     return <div>Loading...</div>;
   }
 
   const handleWatchMovie = () => {
-    router.push(`/movies/${movie.id}/watch`);
+    router.push(`/movies/${movieId}/watch`);
   };
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -61,6 +63,6 @@ const MovieDetails = ({params}: PageProps) => {
       </div>
     </div>
   );
-};
+}
 
 export default MovieDetails;
