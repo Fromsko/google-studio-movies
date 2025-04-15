@@ -6,7 +6,7 @@ import {useEffect, useState} from 'react';
 import {Toaster} from "@/components/ui/toaster";
 import {useSearchParams} from "next/navigation";
 import {Button} from "@/components/ui/button";
-
+import {ChevronLeft, ChevronRight} from 'lucide-react'
 const MOVIES_PER_PAGE = 15;
 
 export default function Home() {
@@ -60,9 +60,10 @@ export default function Home() {
             variant="outline"
             className="rounded-full"
           >
+            <ChevronLeft className="h-4 w-4"/>
             Previous
           </Button>
-          <span className="text-sm text-muted-foreground">{`Page ${currentPage} of ${totalPages}`}</span>
+          <span className="text-sm text-muted-foreground py-2 border-t border-b border-border">{`Page ${currentPage} of ${totalPages}`}</span>
           <Button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
@@ -70,6 +71,7 @@ export default function Home() {
             className="rounded-full"
           >
             Next
+             <ChevronRight className="h-4 w-4"/>
           </Button>
         </div>
       )}
