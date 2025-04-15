@@ -1,68 +1,97 @@
 'use client';
-
 import {getMovie} from '@/services/movie-data';
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {Button} from "@/components/ui/button";
 import {AspectRatio} from "@/components/ui/aspect-ratio";
+import { generateMovieRecommendations } from '@/ai/flows/generate-movie-recommendations';
 
 interface PageProps {
   params: {id: string};
 }
 
-async function MovieDetails({params}: PageProps) {
+const MovieDetails: React.FC<PageProps> = ({params}) => {
   const [movie, setMovie] = useState(null);
   const router = useRouter();
-  const movieId = params.id;
+  const [recommendedMovies, setRecommendedMovies] = useState<string[]>([]);
 
   useEffect(() => {
     const loadMovieDetails = async () => {
-      const movieDetails = await getMovie(movieId);
+      const movieDetails = await getMovie(params.id);
       setMovie(movieDetails);
+
+      if (movieDetails) {
+          try {
+              const recommendations = await generateMovieRecommendations({ movieId: params.id });
+              setRecommendedMovies(recommendations);
+          } catch (error) {
+              console.error("Failed to generate recommendations:", error);
+              // Handle error appropriately, e.g., display a message to the user
+          }
+      }
     };
 
     loadMovieDetails();
-  }, [movieId]);
+  }, [params.id]);
+
+  const handleWatchMovie = () => {
+    router.push(`/movies/${params.id}/watch`);
+  };
 
   if (!movie) {
     return <div>Loading...</div>;
   }
 
-  const handleWatchMovie = () => {
-    router.push(`/movies/${movieId}/watch`);
-  };
-
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">{movie.title}</h1>
-      <p className="text-gray-600 mb-2">{movie.genre}</p>
-      <div className="flex items-center mb-4">
-        <img
-          src={movie.imageUrl || 'https://picsum.photos/500/300'}
-          alt={movie.title}
-          className="w-48 h-72 object-cover rounded-lg shadow-md mr-4"
-          width={500}
-          height={300}
-        />
+      <h1 className="text-2xl font-bold mb-4 text-primary">{movie.title}</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <p className="text-gray-700">{movie.description}</p>
-          <p className="text-gray-700 mt-2">
-            <strong>Cast:</strong> {movie.cast.join(', ')}
+          <AspectRatio ratio={2 / 3}>
+            <img
+              src={movie.imageUrl || 'https://picsum.photos/500/750'}
+              alt={movie.title}
+              className="w-full h-auto object-cover rounded-lg shadow-md"
+            />
+          </AspectRatio>
+        </div>
+        <div>
+          <p className="text-muted-foreground mb-4">{movie.description}</p>
+          <p className="mb-2">
+            <span className="font-semibold">Genre:</span> {movie.genre}
           </p>
-          <p className="text-gray-700">
-            <strong>Release Date:</strong> {movie.releaseDate}
+          <p className="mb-2">
+            <span className="font-semibold">Cast:</span> {movie.cast.join(', ')}
           </p>
-          <Button
-            onClick={handleWatchMovie}
-            className="mt-4 bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark transition duration-300"
-          >
+          <p className="mb-2">
+            <span className="font-semibold">Release Date:</span> {movie.releaseDate}
+          </p>
+          <Button onClick={handleWatchMovie} className="mt-4">
             Watch Movie
           </Button>
         </div>
       </div>
-    </div>
+
+      {recommendedMovies.length > 0 && (
+          <div className="mt-8">
+              <h2 className="text-xl font-semibold mb-4">Recommendations</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {recommendedMovies.map(movieId => {
+                      const recommendedMovie = getMovie(movieId);
+                      if (recommendedMovie) {
+                          return (
+                              <div key={movieId}>
+                                  {/* Render recommended movie card or link */}
+                                  Recommended Movie {movieId}
+                              </div>
+                          );
+                      }
+                      return null;
+                  })}
+              </div>
+          </div>
+      )}    </div>
   );
-}
+};
 
 export default MovieDetails;
