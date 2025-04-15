@@ -21,6 +21,11 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+// export const metadata: Metadata = {
+//   title: 'Movie Streamer',
+//   description: 'A platform to stream and discover movies.',
+// };
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,7 +54,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <nav className="bg-background border-b border-border p-4">
+        <nav className="bg-background border-b border-border p-4 fixed w-full top-0 z-10">
           <div className="container mx-auto flex items-center justify-between">
             <Link href="/" className="text-2xl font-bold text-primary">
               Movie Streamer
@@ -66,8 +71,11 @@ export default function RootLayout({
             </div>
           </div>
         </nav>
-        <main className="container mx-auto p-4">{children}</main>
+        <main className="container mx-auto p-4 mt-20">{children}</main>
       </body>
     </html>
   );
 }
+
+
+    
