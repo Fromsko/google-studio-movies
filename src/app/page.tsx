@@ -37,7 +37,7 @@ export default function Home() {
         placeholder="Search for movies..."
         value={searchTerm}
         onChange={handleSearchChange}
-        className="w-full mb-4"
+        className="w-full mb-4 rounded-md shadow-sm"
       />
 
       {/* Movie Grid */}
@@ -49,4 +49,3 @@ export default function Home() {
     </div>
   );
 }
-
