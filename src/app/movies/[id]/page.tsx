@@ -1,14 +1,14 @@
 'use client';
 
-import { generateMovieRecommendations } from '@/ai/flows/generate-movie-recommendations';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Badge } from '@/components/ui/badge';
-import { getMovie } from '@/services/movie-data';
-import { Play } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {AspectRatio} from '@/components/ui/aspect-ratio';
+import {Badge} from '@/components/ui/badge';
+import {getMovie} from '@/services/movie-data';
+import {Play} from 'lucide-react';
+import {useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import React from 'react';
 
 interface MovieDetailsProps {
   params: {
@@ -18,42 +18,26 @@ interface MovieDetailsProps {
 
 const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   const [movie, setMovie] = useState(null);
-  const [recommendedMovies, setRecommendedMovies] = useState<string[]>([]);
   const router = useRouter();
+
+  // Use React.use to access params.id
+  const movieId = React.use(Promise.resolve(params.id));
 
   useEffect(() => {
     const loadMovieDetails = async () => {
-      const movieDetails = await getMovie(params.id);
+      const movieDetails = await getMovie(movieId);
       setMovie(movieDetails);
     };
 
     loadMovieDetails();
-  }, [params.id]);
-
-  useEffect(() => {
-    const loadRecommendations = async () => {
-      if (movie) {
-        try {
-          const recommendations = await generateMovieRecommendations({
-            movieId: movie.id,
-            numberOfRecommendations: 3,
-          });
-          setRecommendedMovies(recommendations);
-        } catch (error) {
-          console.error('Failed to load recommendations:', error);
-        }
-      }
-    };
-
-    loadRecommendations();
-  }, [movie]);
+  }, [movieId]);
 
   if (!movie) {
     return <div>Loading...</div>;
   }
 
   const handleWatchMovie = () => {
-    router.push(`/movies/${params.id}/watch`);
+    router.push(`/movies/${movieId}/watch`);
   };
 
   return (
@@ -99,24 +83,6 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
                   <Play className="mr-2 h-4 w-4"/>
                   Watch Movie
                 </Button>
-              </div>
-
-              {/* Recommendations Section */}
-              <div className="mt-6">
-                <h2 className="text-xl font-semibold mb-2">Recommendations</h2>
-                {recommendedMovies.length > 0 ? (
-                  <ul className="list-disc pl-5">
-                    {recommendedMovies.map(movieId => {
-                      return (
-                        <li key={movieId} className="text-muted-foreground">
-                          {movieId}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <p className="text-muted-foreground">No recommendations found.</p>
-                )}
               </div>
             </div>
           </div>
