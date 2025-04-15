@@ -53,19 +53,21 @@ export default function Home() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-4 items-center space-x-2">
           <Button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             variant="outline"
+            className="rounded-full"
           >
             Previous
           </Button>
-          <span className="mx-2">{`Page ${currentPage} of ${totalPages}`}</span>
+          <span className="text-sm text-muted-foreground">{`Page ${currentPage} of ${totalPages}`}</span>
           <Button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             variant="outline"
+            className="rounded-full"
           >
             Next
           </Button>
@@ -74,4 +76,3 @@ export default function Home() {
     </div>
   );
 }
-
