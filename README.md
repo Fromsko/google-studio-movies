@@ -12,6 +12,10 @@ google-studio-movies is a simple movie site project designed to showcase movies.
 *   **Development Environment:** Google Studio (for coding, building, and previewing the application)
 *   **(Potentially) Google Cloud Services:**  Depending on the implementation, this project might also utilize other Google Cloud services for data storage, API integration, or deployment (details to be filled in as available).
 
+## Display
+
+![display](docs/display.gif)
+
 ## Setup and Installation
 
 + install libs
