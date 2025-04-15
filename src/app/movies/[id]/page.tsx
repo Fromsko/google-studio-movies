@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { getMovie } from '@/services/movie-data';
 import { Play } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface MovieDetailsProps {
   params: {
@@ -18,7 +19,7 @@ interface MovieDetailsProps {
 const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   const [movie, setMovie] = useState(null);
   const [recommendedMovies, setRecommendedMovies] = useState<string[]>([]);
-  const [showIframe, setShowIframe] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const loadMovieDetails = async () => {
@@ -52,7 +53,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   }
 
   const handleWatchMovie = () => {
-    setShowIframe(true);
+    router.push(`/movies/${params.id}/watch`);
   };
 
   return (
@@ -94,27 +95,11 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
             {/* Right Column - Streaming and Recommendations */}
             <div className="flex flex-col justify-start">
               <div className="mt-4">
-                <Button onClick={handleWatchMovie} disabled={showIframe}>
+                <Button onClick={handleWatchMovie}>
                   <Play className="mr-2 h-4 w-4"/>
-                  {showIframe ? 'Watching Movie' : 'Watch Movie'}
+                  Watch Movie
                 </Button>
               </div>
-
-              {showIframe && (
-                <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden shadow-md mt-4">
-                  <iframe
-                    src={movie.streamUrl}
-                    title="Movie Stream"
-                    className="w-full h-full"
-                    allowFullScreen
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      border: 'none',
-                    }}
-                  />
-                </AspectRatio>
-              )}
 
               {/* Recommendations Section */}
               <div className="mt-6">
