@@ -1,13 +1,13 @@
 'use client';
 
-import {getMovie} from '@/services/movie-data';
-import {useEffect, useState} from 'react';
-import {useToast} from "@/hooks/use-toast"
-import {AspectRatio} from "@/components/ui/aspect-ratio"
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Badge} from "@/components/ui/badge";
-import {Play} from "lucide-react";
-import {Button} from "@/components/ui/button";
+import { generateMovieRecommendations } from '@/ai/flows/generate-movie-recommendations';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Badge } from '@/components/ui/badge';
+import { getMovie } from '@/services/movie-data';
+import { Play } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface MovieDetailsProps {
   params: {
@@ -17,7 +17,7 @@ interface MovieDetailsProps {
 
 const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   const [movie, setMovie] = useState(null);
-  const {toast} = useToast()
+  const [recommendedMovies, setRecommendedMovies] = useState<string[]>([]);
 
   useEffect(() => {
     const loadMovieDetails = async () => {
@@ -28,6 +28,24 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
     loadMovieDetails();
   }, [params.id]);
 
+  useEffect(() => {
+    const loadRecommendations = async () => {
+      if (movie) {
+        try {
+          const recommendations = await generateMovieRecommendations({
+            movieId: movie.id,
+            numberOfRecommendations: 3,
+          });
+          setRecommendedMovies(recommendations);
+        } catch (error) {
+          console.error('Failed to load recommendations:', error);
+        }
+      }
+    };
+
+    loadRecommendations();
+  }, [movie]);
+
   if (!movie) {
     return <div>Loading...</div>;
   }
@@ -35,24 +53,26 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="w-full">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 pb-4">
           <CardTitle className="text-2xl font-semibold">{movie.title}</CardTitle>
           <Badge variant="secondary">{movie.genre}</Badge>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Left Column - Movie Details */}
             <div>
               <AspectRatio ratio={500 / 300} className="w-full rounded-lg overflow-hidden shadow-md">
                 <img
                   src={movie.imageUrl || 'https://picsum.photos/500/300'}
                   alt={movie.title}
                   className="object-cover w-full h-full"
+                  style={{objectFit: 'cover'}}
                 />
               </AspectRatio>
 
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-2">Description</h2>
-                <CardDescription className="text-muted-foreground">{movie.description}</CardDescription>
+                <p className="text-muted-foreground">{movie.description}</p>
               </div>
 
               <div className="mt-4">
@@ -66,6 +86,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
               </div>
             </div>
 
+            {/* Right Column - Streaming and Recommendations */}
             <div className="flex flex-col justify-start">
               <h2 className="text-xl font-semibold mb-2">Watch Now</h2>
               <AspectRatio ratio={16 / 9} className="rounded-lg overflow-hidden shadow-md">
@@ -74,6 +95,11 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
                   title="Movie Stream"
                   className="w-full h-full"
                   allowFullScreen
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                  }}
                 />
               </AspectRatio>
               <div className="mt-4">
@@ -81,6 +107,24 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({params}) => {
                   <Play className="mr-2 h-4 w-4"/>
                   Watch Movie
                 </Button>
+              </div>
+
+              {/* Recommendations Section */}
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-2">Recommendations</h2>
+                {recommendedMovies.length > 0 ? (
+                  <ul className="list-disc pl-5">
+                    {recommendedMovies.map(movieId => {
+                      return (
+                        <li key={movieId} className="text-muted-foreground">
+                          {movieId}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p className="text-muted-foreground">No recommendations found.</p>
+                )}
               </div>
             </div>
           </div>
